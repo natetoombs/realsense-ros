@@ -1560,12 +1560,12 @@ void BaseRealSenseNode::pose_callback(rs2::frame frame)
     msg.header.stamp = t;
     msg.header.frame_id = _odom_frame_id;
     msg.child_frame_id = _frame_id[POSE];
-    msg.transform.translation.x = pose_msg.pose.position.x;
-    msg.transform.translation.y = pose_msg.pose.position.y;
-    msg.transform.translation.z = pose_msg.pose.position.z;
-    msg.transform.rotation.x = pose_msg.pose.orientation.x;
-    msg.transform.rotation.y = pose_msg.pose.orientation.y;
-    msg.transform.rotation.z = pose_msg.pose.orientation.z;
+    msg.transform.translation.x = -pose_msg.pose.position.z;
+    msg.transform.translation.y = pose_msg.pose.position.x;
+    msg.transform.translation.z = pose_msg.pose.position.y;
+    msg.transform.rotation.x = -pose_msg.pose.orientation.z;
+    msg.transform.rotation.y = pose_msg.pose.orientation.x;
+    msg.transform.rotation.z = -pose_msg.pose.orientation.y;
     msg.transform.rotation.w = pose_msg.pose.orientation.w;
 
     if (_publish_odom_tf) br.sendTransform(msg);
@@ -1577,8 +1577,8 @@ void BaseRealSenseNode::pose_callback(rs2::frame frame)
 
         geometry_msgs::Vector3Stamped v_msg;
         v_msg.vector.x = -pose.velocity.z;
-        v_msg.vector.y = -pose.velocity.x;
-        v_msg.vector.z = pose.velocity.y;
+        v_msg.vector.y = pose.velocity.x;
+        v_msg.vector.z = -pose.velocity.y;
         tf::Vector3 tfv;
         tf::vector3MsgToTF(v_msg.vector,tfv);
         tf::Quaternion q(-msg.transform.rotation.x,-msg.transform.rotation.y,-msg.transform.rotation.z,msg.transform.rotation.w);
@@ -1587,8 +1587,8 @@ void BaseRealSenseNode::pose_callback(rs2::frame frame)
 	
         geometry_msgs::Vector3Stamped om_msg;
         om_msg.vector.x = -pose.angular_velocity.z;
-        om_msg.vector.y = -pose.angular_velocity.x;
-        om_msg.vector.z = pose.angular_velocity.y;
+        om_msg.vector.y = pose.angular_velocity.x;
+        om_msg.vector.z = -pose.angular_velocity.y;
         tf::vector3MsgToTF(om_msg.vector,tfv);
         tfv=tf::quatRotate(q,tfv);
         tf::vector3TFToMsg(tfv,om_msg.vector);
