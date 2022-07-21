@@ -1545,40 +1545,15 @@ void BaseRealSenseNode::pose_callback(rs2::frame frame)
     const auto& stream_index(POSE);
     rs2_pose pose = frame.as<rs2::pose_frame>().get_pose_data();
     ros::Time t(frameSystemTimeSec(frame));
-    
+
     geometry_msgs::PoseStamped pose_msg;
     pose_msg.pose.position.x = -pose.translation.z;
     pose_msg.pose.position.y = pose.translation.x;
     pose_msg.pose.position.z = -pose.translation.y;
-    pose_msg.pose.orientation.x = pose.rotation.x;
-    pose_msg.pose.orientation.y = pose.rotation.y;
-    pose_msg.pose.orientation.z = pose.rotation.z;
-    pose_msg.pose.orientation.w = pose.rotation.w;    
-    
-    geometry_msgs::PoseStamped new_msg;
-    tf2::Quaternion q_orig, q_rot1, q_rot2, q_rot3, q_new;
-    tf2::convert(pose_msg.pose.orientation, q_orig);
-    
-    double r = -0.85, p = 0, y = 0;
-    q_rot1.setRPY(r, p, y);
-
-    q_new = q_orig*q_rot1;  // Calculate the new orientation
-    q_new.normalize();
-    
-    r = 0;
-    p = 0;
-    y = -0.05;
-    q_rot2.setRPY(r, p, y);
-
-    q_new = q_new*q_rot2;  // Calculate the new orientation
-    q_new.normalize();
-
-    tf2::convert(q_new, new_msg.pose.orientation);
-
-    pose_msg.pose.orientation.x = -new_msg.pose.orientation.z;
-    pose_msg.pose.orientation.y = new_msg.pose.orientation.x;
-    pose_msg.pose.orientation.z = -new_msg.pose.orientation.y; 
-    pose_msg.pose.orientation.w = new_msg.pose.orientation.w;
+    pose_msg.pose.orientation.x = -pose.rotation.z;
+    pose_msg.pose.orientation.y = pose.rotation.x;
+    pose_msg.pose.orientation.z = -pose.rotation.y;
+    pose_msg.pose.orientation.w = pose.rotation.w;
 
     static tf2_ros::TransformBroadcaster br;
     geometry_msgs::TransformStamped msg;
